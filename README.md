@@ -18,3 +18,4 @@
 1. post building scripts (self referencing fk)
 2. drop tables script ()
 3. support for other DB: Maria and PostgreSQL
+4. add tests
