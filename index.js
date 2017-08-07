@@ -288,7 +288,6 @@ var parser = {
     connection.query(sqlCode[index], this._helper.bind(this, index, sqlCode, connection, verbose));
   },
 
-
   _build: function(connection, schema, verbose) {
     var index = 0;
     var sqlCode = this._run(schema);
@@ -299,7 +298,15 @@ var parser = {
 var schemaBuilder = {
   run: parser._run.bind(parser),
   build: parser._build.bind(parser),
-  schema: require('./schema')
+  //schema: require('./schema')
+};
+
+var test = {
+  settings: settings,
+  analysis: analysis,
+  synthesis: synthesis,
+  parser: parser
 };
 
 module.exports = schemaBuilder;
+module.exports.test = test;
