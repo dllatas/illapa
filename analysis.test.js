@@ -61,11 +61,11 @@ describe('_checkPropLength', () => {
 describe('_setPropDefault', () => {
   
   test('should set default for string', () => {
-    expect(Analysis._setPropDefault('S')).toEqual("'\S\'");
+    expect(Analysis._setPropDefault('S')).toEqual('\'\S\'');
   });
 
   test('should set default for a string representation of a number ', () => {
-    expect(Analysis._setPropDefault('6')).toEqual("'6'");
+    expect(Analysis._setPropDefault('6')).toEqual('\'6\'');
   });
   
 });
@@ -79,7 +79,7 @@ describe('_checkColumn', () => {
   });
 
   test('should modify value of default', () => {
-    expect(output[2]._default).toEqual("'\S\'");
+    expect(output[2]._default).toEqual('\'\S\'');
   });
 
   test('should return an array with 3 lenghts', () => {
