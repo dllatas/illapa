@@ -7,8 +7,8 @@ const synthesis = {
   },
     
   indexPros: {
-    _unique: 'UNIQUE INDEX ',
-    _normal: 'INDEX '
+    unique: 'UNIQUE INDEX ',
+    normal: 'INDEX '
   },
     
   foreign: {
@@ -55,10 +55,10 @@ const synthesis = {
     
   generateIndex: function(props) {
         
-    var _this = this;
+    const _this = this;
 
-    var indexSQL = props.reduce(function(a, b) {
-      return a.concat(_this.indexPros[b._type] + b._name + '(' + b._fields.join() + '), ');
+    const indexSQL = props.reduce(function(a, b) {
+      return a.concat(_this.indexPros[b._type] + b._name + '(' + b._column.join() + '), ');
     }, '');
 
     return _this._sanitizeOutput(indexSQL);
@@ -73,20 +73,27 @@ const synthesis = {
     var _this = this;
 
     var foreignSQL = props.reduce(function(a, b) {
-      var keys = Object.keys(b._fields);
+      var keys = Object.keys(b._column);
       var hostColumns = keys.map(function(k){
-        return b._fields[k];
+        return b._column[k];
       });
       var first = a.concat('CONSTRAINT ' + b._name + ' FOREIGN KEY(' + hostColumns.join() + ') ');
-      var second = first.concat('REFERENCES ' + b._table + '(' + Object.keys(b._fields).join() + ')');
+      var second = first.concat('REFERENCES ' + b._table + '(' + Object.keys(b._column).join() + ')');
       return second + (_this.foreign.update[b._update] || '' ) + (_this.foreign.delete[b._delete] || '') + ', ';
     }, '');
         
     return _this._sanitizeOutput(foreignSQL);
   },
 
+  generateName: function(value) {
+    return 'CREATE TABLE IF NOT EXISTS ' + value;
+  },
+
   operationDispatcher: {
-    '_column' : function(props) {
+    '_name': function(value) {
+      return this.generateName(value);
+    },
+    '_column': function(props) {
       return this.generateColumn(props);
     },
     '_primary': function(props) {
@@ -100,45 +107,53 @@ const synthesis = {
     } 
   },
 
-  _generatePropCode: function(schema, tables) {
+  _generatePropCode: function(schema) {
 
-    var _this = this;
+    const _this = this;
+    let generatedSchema = [];
 
-    // [ [ sql code for each prop of table ] ]
-    var propCode = tables.map(function(table) {
-      var columns = Object.keys(schema[table]);
-      return columns.map(function(col) {
-        return _this.operationDispatcher[col].bind(_this)(schema[table][col]);
-      });
-    });
+    for (let table of schema) {
+      
+      const props = Object.keys(table);
+      let generatedProp = {};
 
-    return propCode;
+      for (let prop of props) {
+        const value = table[prop];
+        generatedProp[prop] = _this.operationDispatcher[prop].bind(_this)(value);
+      }
+
+      generatedSchema.push(generatedProp);
+    }
+
+    return generatedSchema;
   },
 
-  _generateTableCode: function(propCode, tables) {
+  _generateTableCode: function(partialSchema) {
 
-    var _this = this;
+    const _this = this;
+    let tableCode = [];
 
-    var tableCode = propCode.map(function(prop, tableIndex) {
-			
-      var tableDefintion  = prop.reduce(function(a, b) {
-        return a.concat(b + ', ');
+    for (let table of partialSchema) {
+
+      const props = Object.keys(table).filter(p => p !== '_name');
+
+      const tableDefintion = props.reduce((a, b) => {
+        return a.concat(table[b] + ', ');
       }, '');
 
-      return 'CREATE TABLE IF NOT EXISTS ' + tables[tableIndex] + '(' + _this._sanitizeOutput(tableDefintion) + ')';
-    });
-		
+      tableCode.push(table._name + '(' + _this._sanitizeOutput(tableDefintion) + ')');
+    }
+
     return tableCode;
   },
 
   run: function(schema) {
 
-    var _this = this;
-    var tables = Object.keys(schema);
+    const _this = this;
 
-    var propCode = _this._generatePropCode(schema, tables);
-    var tableCode = _this._generateTableCode(propCode, tables);
-
+    const partialSchema = _this._generatePropCode(schema);
+    const tableCode = _this._generateTableCode(partialSchema);
+    
     return tableCode;
   }
 };

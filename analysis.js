@@ -1,7 +1,8 @@
 const analysis = {
 
   _indexType: [
-    'unique'
+    'unique',
+    'normal'
   ],
 
   _checkPropName: function(name) {
