@@ -179,7 +179,7 @@ var synthesis = {
     var _this = this;
 
     var foreignSQL = props.reduce(function(a, b) {
-		    var keys = Object.keys(b._fields);
+      var keys = Object.keys(b._fields);
       var hostColumns = keys.map(function(k){
         return b._fields[k];
       });
