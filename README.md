@@ -1,18 +1,19 @@
-# schema builder
+### schema builder
 
-* tired of using 3rd party software to design and generate a DB schema ?? :tired_face:
-* SQL file never has the latest version ?? :angry:
-* unclear documentation of other schema builders ?? :cry:
-* SQL is declarative, no need for JS imperative syntax to generate a schema :no_mouth:
+* **simple** 
+nodeJS generates DDL SQL from a JS object. It can be executed into DB via driver. No need for 3rd party software, only JS.
 
-### principles
+* **single source of truth** 
+JS objects are DB schema. However, there is no enforcement that this remains like this.
 
-* **simple:** schema object generates SQL code, SQL code runs in MySQL. only js.
-* **single source of truth:** schema object is the db schema, always last version.
-* **versioning:** each schema modification should be a commit (use git, no need for other vcs)
-* **opinionated:** schema object has a fixed template (declarative syntax)
-* **radical:** no ALTER syntax supported. DROP - CREATE - LOAD loop.
+* **versioning** 
+Each schema modification should be a commit. Use only git.
 
+* **opinionated** 
+Each JS object has a fixed template, this keeps SQL declarative syntax. No need for an imperative syntax.
+
+* **radical** 
+No ALTER syntax supported. DROP - CREATE - LOAD loop.
 
 ### todo 
 
