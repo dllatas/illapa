@@ -1,16 +1,16 @@
-const analysis = require('./analysis');
-const synthesis = require('./synthesis');
+const Analysis = require('./analysis');
+const Synthesis = require('./synthesis');
 
 const builder = {
 	
   _run: function(schema) {
 
     // Execute analysis on schema object
-    const analyzedSchema = analysis(schema);
+    const analyzedSchema = Analysis(schema);
     console.log('Schema analysis finished succesfully.');
 
     // Generate SQL code from analyzed schema
-    const sqlCode = synthesis(analyzedSchema);
+    const sqlCode = Synthesis(analyzedSchema);
     console.log('Schema synthesis finished succesfully.');
 
     return sqlCode;
