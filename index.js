@@ -18,8 +18,4 @@ const builder = {
 
 };
 
-const schemaBuilder = {
-  run: builder._run.bind(builder),
-};
-
-module.exports = schemaBuilder;
+module.exports = builder._run.bind(builder);
