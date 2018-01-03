@@ -1,17 +1,17 @@
 const synthesis = {
 
-  keywords: {
-    _null:       [' NULL', ' NOT NULL'],
+  _keywords: {
+    _null:       [' NULL', ' NOT NULL'], // TODO: use SET 
     _default:    [' DEFAULT ', ''],
     _increment:  [' AUTO_INCREMENT', ''],
   },
     
-  indexPros: {
+  _indexPros: {
     unique: 'UNIQUE INDEX ',
     normal: 'INDEX '
   },
     
-  foreign: {
+  _foreign: {
     update: {
       cascade: ' ON UPDATE CASCADE',
     },
@@ -20,13 +20,13 @@ const synthesis = {
     }
   },
 
-  generateProp: function(prop, propValue) {
+  _generateProp: function(prop, propValue) {
         
     if (typeof propValue !== 'boolean') {
-      return propValue ? this.keywords[prop][0] + propValue : this.keywords[prop][1];
+      return propValue ? this._keywords[prop][0] + propValue : this._keywords[prop][1];
     }
         
-    return propValue ? this.keywords[prop][0] : this.keywords[prop][1];
+    return propValue ? this._keywords[prop][0] : this._keywords[prop][1];
   },
 
   _sanitizeOutput: function(output) {
@@ -38,14 +38,14 @@ const synthesis = {
     return output.substr(0, (output.length - 2));
   },
 
-  generateColumn: function(props) {
+  _generateColumn: function(props) {
 		
-    var _this = this; 
-    var propNames = Object.keys(_this.keywords);
+    const _this = this; 
+    const propNames = Object.keys(_this._keywords);
 
-    var columnSQL = props.reduce(function(a, b) {
-      var complement = propNames.reduce(function(c, d) {
-        return c.concat(_this.generateProp(d, b[d]));
+    const columnSQL = props.reduce(function(a, b) {
+      const complement = propNames.reduce(function(c, d) {
+        return c.concat(_this._generateProp(d, b[d]));
       }, '');
       return a.concat(b._name + ' ' + b._type + '(' + b._length + ')' + complement + ', ');
     }, '');
@@ -53,57 +53,57 @@ const synthesis = {
     return _this._sanitizeOutput(columnSQL);
   },
     
-  generateIndex: function(props) {
+  _generateIndex: function(props) {
         
     const _this = this;
 
     const indexSQL = props.reduce(function(a, b) {
-      return a.concat(_this.indexPros[b._type] + b._name + '(' + b._column.join() + '), ');
+      return a.concat(_this._indexPros[b._type] + b._name + '(' + b._column.join() + '), ');
     }, '');
 
     return _this._sanitizeOutput(indexSQL);
   },
 
-  generatePrimary: function(props) {
+  _generatePrimary: function(props) {
     return 'PRIMARY KEY (' + props.join() + ')';
   },
     
-  generateForeign: function(props) {
+  _generateForeign: function(props) {
 
-    var _this = this;
+    const _this = this;
 
-    var foreignSQL = props.reduce(function(a, b) {
-      var keys = Object.keys(b._column);
-      var hostColumns = keys.map(function(k){
+    const foreignSQL = props.reduce(function(a, b) {
+      const keys = Object.keys(b._column);
+      const hostColumns = keys.map(function(k){
         return b._column[k];
       });
-      var first = a.concat('CONSTRAINT ' + b._name + ' FOREIGN KEY(' + hostColumns.join() + ') ');
-      var second = first.concat('REFERENCES ' + b._table + '(' + Object.keys(b._column).join() + ')');
-      return second + (_this.foreign.update[b._update] || '' ) + (_this.foreign.delete[b._delete] || '') + ', ';
+      let first = a.concat('CONSTRAINT ' + b._name + ' FOREIGN KEY(' + hostColumns.join() + ') ');
+      const second = first.concat('REFERENCES ' + b._table + '(' + Object.keys(b._column).join() + ')');
+      return second + (_this._foreign.update[b._update] || '' ) + (_this._foreign.delete[b._delete] || '') + ', ';
     }, '');
         
     return _this._sanitizeOutput(foreignSQL);
   },
 
-  generateName: function(value) {
+  _generateName: function(value) {
     return 'CREATE TABLE IF NOT EXISTS ' + value;
   },
 
-  operationDispatcher: {
+  _operationDispatcher: {
     '_name': function(value) {
-      return this.generateName(value);
+      return this._generateName(value);
     },
     '_column': function(props) {
-      return this.generateColumn(props);
+      return this._generateColumn(props);
     },
     '_primary': function(props) {
-      return this.generatePrimary(props);
+      return this._generatePrimary(props);
     },
     '_index': function(props) {
-      return this.generateIndex(props);
+      return this._generateIndex(props);
     },
     '_foreign': function(props) {
-      return this.generateForeign(props);
+      return this._generateForeign(props);
     } 
   },
 
@@ -112,14 +112,16 @@ const synthesis = {
     const _this = this;
     let generatedSchema = [];
 
+    if (!Array.isArray(schema)) {
+      schema = [schema];
+    }
+
     for (let table of schema) {
-      
       const props = Object.keys(table);
       let generatedProp = {};
-
       for (let prop of props) {
         const value = table[prop];
-        generatedProp[prop] = _this.operationDispatcher[prop].bind(_this)(value);
+        generatedProp[prop] = _this._operationDispatcher[prop].bind(_this)(value);
       }
 
       generatedSchema.push(generatedProp);
@@ -132,6 +134,10 @@ const synthesis = {
 
     const _this = this;
     let tableCode = [];
+
+    if (!Array.isArray(partialSchema)) {
+      partialSchema = [partialSchema];
+    }
 
     for (let table of partialSchema) {
 
@@ -160,3 +166,10 @@ const synthesis = {
 
 
 module.exports = synthesis.run.bind(synthesis);
+module.exports.synthesis = synthesis;
+module.exports.generateProp = synthesis._generateProp.bind(synthesis);
+module.exports.generateColumn = synthesis._generateColumn.bind(synthesis);
+module.exports.generateIndex = synthesis._generateIndex.bind(synthesis);
+module.exports.generateForeign = synthesis._generateForeign.bind(synthesis);
+module.exports.generatePropCode = synthesis._generatePropCode.bind(synthesis);
+module.exports.generateTableCode = synthesis._generateTableCode.bind(synthesis);
