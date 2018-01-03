@@ -141,7 +141,7 @@ const analysis = {
       return this._checkIndex(value, table);
     },
     _foreign: function(value, table) {
-      this._checkForeign(value, table);
+      return this._checkForeign(value, table);
     }
   },
 	
