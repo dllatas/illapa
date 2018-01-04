@@ -52,8 +52,8 @@ describe('_checkPropLength', () => {
     expect(() => { Analysis._checkPropLength(); }).toThrow();
   });
 
-  test('should throw an error when length is not number ', () => {
-    expect(() => { Analysis._checkPropLength('5'); }).toThrow();
+  test('should throw an error when length is not a number ', () => {
+    expect(() => { Analysis._checkPropLength('abc'); }).toThrow();
   });
 
 });

@@ -183,7 +183,7 @@ const analysis = {
         }
       }
 
-      console.log(table._name.concat(' finished successfully!'));
+      //console.log(table._name.concat(' finished successfully!'));
       analyzedSchema.push(analyzedTable);
 
     }

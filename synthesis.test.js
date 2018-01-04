@@ -76,11 +76,21 @@ describe('_foreign', () => {
   });
 
   test('update key should have value object with property cascade and value ON UPDATE CASCADE', () => {
-    expect(Synthesis._foreign).toHaveProperty('update', { cascade: ' ON UPDATE CASCADE' });
+    expect(Synthesis._foreign).toHaveProperty('update', {
+      cascade: ' ON UPDATE CASCADE',
+      no_action: ' ON UPDATE NO ACTION',
+      _null: ' ON UPDATE SET NULL',
+      _default: ' ON UPDATE SET DEFAULT'
+    });
   });
 
   test('delete key should have value object with property cascade and value ON DELETE CASCADE', () => {
-    expect(Synthesis._foreign).toHaveProperty('delete', { cascade: ' ON DELETE CASCADE' });
+    expect(Synthesis._foreign).toHaveProperty('delete', {
+      cascade: ' ON DELETE CASCADE',
+      no_action: ' ON DELETE NO ACTION',
+      _null: ' ON DELETE SET NULL',
+      _default: ' ON DELETE SET DEFAULT'
+    });
   });
 });
 
@@ -240,7 +250,6 @@ describe('_generateTableCode', () => {
   test('should return a string (SQL Code)', () => {
     let output = GeneratePropCode(contextAnalyzed);
     output = GenerateTableCode(output);
-    console.log(typeof output);
     expect(typeof output).toBe('object');
   });
 
