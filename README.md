@@ -1,4 +1,4 @@
-### schema builder
+### builder
 
 * **simple** 
 nodeJS generates DDL SQL from a JS object. It can be executed into DB via driver. No need for 3rd party software, only JS.
@@ -14,10 +14,3 @@ Each JS object has a fixed template, this keeps SQL declarative syntax. No need 
 
 * **radical** 
 No ALTER syntax supported. DROP - CREATE - LOAD loop.
-
-### todo 
-
-1. post building scripts (self referencing fk)
-2. drop tables script ()
-3. support for other DB: Maria and PostgreSQL
-4. add tests
