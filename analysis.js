@@ -35,10 +35,19 @@ const analysis = {
       throw new Error('A length must be defined for a column');
     }
 
-    if (typeof _length !== 'number') {
-      throw new Error('It must have be of type number');
+    if (typeof _length === 'string') {
+      _length = _length.replace(',', '.');
     }
-  
+
+    if (typeof _length !== 'number') {
+      
+      const parsedLength = Number(_length);
+
+      if (isNaN(parsedLength)) {
+        throw new Error('It must be of type number');
+      }
+
+    }
   },
 
   _setPropDefault: function(_default) {
@@ -174,6 +183,7 @@ const analysis = {
         }
       }
 
+      console.log(table._name.concat(' finished successfully!'));
       analyzedSchema.push(analyzedTable);
 
     }

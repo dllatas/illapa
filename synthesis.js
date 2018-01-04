@@ -14,9 +14,15 @@ const synthesis = {
   _foreign: {
     update: {
       cascade: ' ON UPDATE CASCADE',
+      no_action: ' ON UPDATE NO ACTION',
+      _null: ' ON UPDATE SET NULL',
+      _default: ' ON UPDATE SET DEFAULT'
     },
     delete: {
       cascade: ' ON DELETE CASCADE',
+      no_action: ' ON DELETE NO ACTION',
+      _null: ' ON DELETE SET NULL',
+      _default: ' ON DELETE SET DEFAULT'
     }
   },
 
