@@ -154,8 +154,12 @@ describe('_checkPropDispatcher', () => {
     expect(Analysis._checkPropDispatcher).toBeInstanceOf(Object);
   });
 
-  test('should have keys: _name, _column, _primary, _index, _foreign', () => {
-    expect(Object.keys(Analysis._checkPropDispatcher)).toEqual(expect.arrayContaining(['_name', '_column', '_primary', '_index', '_foreign']));
+  test('should have keys: _table, _column, _primary, _index, _foreign', () => {
+    expect(
+      Object.keys(Analysis._checkPropDispatcher)
+    ).toEqual(expect.arrayContaining(
+      ['_table', '_column', '_primary', '_index', '_foreign']
+    ));
   });
 
 });

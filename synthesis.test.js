@@ -186,16 +186,26 @@ describe('_generateForeign', () => {
 
 });
 
-describe('_generateName', () => {
+describe('_generateTable', () => {
 
-  const output = Synthesis._generateName(contextAnalyzed[0]._name);
+  const output = Synthesis._generateTable(contextAnalyzed[0]._table);
 
   test('should return a string', () => {
     expect(typeof output).toBe('string');
   });
 
-  test('should generate a string with SQL code for table name', () => {
-    expect(output).toBe('CREATE TABLE IF NOT EXISTS context');
+  test('should generate a string with SQL code for table name without IF NOT EXISTS', () => {
+    expect(output).toBe('CREATE TABLE context');
+  });
+
+  const pillarOutput = Synthesis._generateTable(pillarAnalyzed[0]._table);
+
+  test('should return a string', () => {
+    expect(typeof pillarOutput).toBe('string');
+  });
+
+  test('should generate a string with SQL code for table name with IF NOT EXISTS', () => {
+    expect(pillarOutput).toBe('CREATE TABLE IF NOT EXISTS pillar');
   });
 
 });
@@ -206,8 +216,8 @@ describe('_operationDispatcher', () => {
     expect(Synthesis._operationDispatcher).toBeInstanceOf(Object);
   });
 
-  test('should have keys: _name, _column, _primary, _index, _foreign', () => {
-    expect(Synthesis._operationDispatcher).toHaveProperty('_name');
+  test('should have keys: _table, _column, _primary, _index, _foreign', () => {
+    expect(Synthesis._operationDispatcher).toHaveProperty('_table');
     expect(Synthesis._operationDispatcher).toHaveProperty('_column');
     expect(Synthesis._operationDispatcher).toHaveProperty('_primary');
     expect(Synthesis._operationDispatcher).toHaveProperty('_index');
@@ -219,7 +229,7 @@ describe('_operationDispatcher', () => {
 describe('_generatePropCode', () => {
 
   const result = [{ 
-    _name: 'CREATE TABLE IF NOT EXISTS context',
+    _table: 'CREATE TABLE context',
     _column: 'id INT(11) NOT NULL AUTO_INCREMENT, name VARCHAR(100) NOT NULL, digest VARCHAR(10) NOT NULL DEFAULT \'S\'',
     _primary: 'PRIMARY KEY (id)',
     _index: 'UNIQUE INDEX idx_uq_name(name), UNIQUE INDEX idx_uq_abv(digest)'
@@ -239,7 +249,7 @@ describe('_generatePropCode', () => {
 
 describe('_generateTableCode', () => {
 
-  const result = ['CREATE TABLE IF NOT EXISTS context(id INT(11) NOT NULL AUTO_INCREMENT, name VARCHAR(100) NOT NULL, digest VARCHAR(10) NOT NULL DEFAULT \'S\', PRIMARY KEY (id), UNIQUE INDEX idx_uq_name(name), UNIQUE INDEX idx_uq_abv(digest))'];
+  const result = ['CREATE TABLE context(id INT(11) NOT NULL AUTO_INCREMENT, name VARCHAR(100) NOT NULL, digest VARCHAR(10) NOT NULL DEFAULT \'S\', PRIMARY KEY (id), UNIQUE INDEX idx_uq_name(name), UNIQUE INDEX idx_uq_abv(digest))'];
 
   test('should accept objects as an input too', () => {
     let output = GeneratePropCode(contextAnalyzed[0]);
