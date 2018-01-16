@@ -128,7 +128,21 @@ const analysis = {
     return value;
   },
 
-  _checkName: function(value) {
+  _checkTable: function(value) {
+    
+    if ( typeof value._name !== 'string' ) {
+      throw new Error('The table name must be a string: '.concat(value._name).concat(' is of type ').concat(typeof value._name));
+    }
+
+    if (!value._force) {
+      delete value._force;
+      return value;
+    }
+
+    if ( typeof value._force !== 'boolean' ) {
+      throw new Error('Force creating a table must be a boolean: '.concat(value._force).concat(' is of type ').concat(typeof value._force));
+    }
+
     return value;
   },
 	
@@ -137,8 +151,8 @@ const analysis = {
   },
 	
   _checkPropDispatcher: {
-    _name: function(value, table) {
-      return this._checkName(value, table);
+    _table: function(value, table) {
+      return this._checkTable(value, table);
     },
     _column: function(value, table) {
       return this._checkColumn(value, table);
@@ -183,13 +197,10 @@ const analysis = {
         }
       }
 
-      //console.log(table._name.concat(' finished successfully!'));
       analyzedSchema.push(analyzedTable);
-
     }
 
     return analyzedSchema;
-
   }
 };
 

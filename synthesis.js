@@ -91,13 +91,19 @@ const synthesis = {
     return _this._sanitizeOutput(foreignSQL);
   },
 
-  _generateName: function(value) {
-    return 'CREATE TABLE IF NOT EXISTS ' + value;
+  _generateTable: function(value) {
+    
+    if (value._force) {
+      return 'CREATE TABLE ' + value._name;
+
+    }
+
+    return 'CREATE TABLE IF NOT EXISTS ' + value._name;
   },
 
   _operationDispatcher: {
-    '_name': function(value) {
-      return this._generateName(value);
+    '_table': function(value) {
+      return this._generateTable(value);
     },
     '_column': function(props) {
       return this._generateColumn(props);
@@ -123,9 +129,12 @@ const synthesis = {
     }
 
     for (let table of schema) {
+      
       const props = Object.keys(table);
       let generatedProp = {};
+      
       for (let prop of props) {
+        
         const value = table[prop];
         generatedProp[prop] = _this._operationDispatcher[prop].bind(_this)(value);
       }
@@ -147,13 +156,14 @@ const synthesis = {
 
     for (let table of partialSchema) {
 
-      const props = Object.keys(table).filter(p => p !== '_name');
+      const props = Object.keys(table).filter(p => p !== '_table');
+      const _table = Object.keys(table).filter(p => p === '_table');
 
       const tableDefintion = props.reduce((a, b) => {
         return a.concat(table[b] + ', ');
       }, '');
 
-      tableCode.push(table._name + '(' + _this._sanitizeOutput(tableDefintion) + ')');
+      tableCode.push(table[_table] + '(' + _this._sanitizeOutput(tableDefintion) + ')');
     }
 
     return tableCode;
