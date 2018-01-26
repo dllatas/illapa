@@ -187,13 +187,17 @@ const analysis = {
       // Loop for settings on table
       for (let prop of props) {
 
+        if (prop === '_migration') {
+          continue;
+        }
+
         const value = table[prop]; 
 
         // Start analysis
-        const propAnalyzed = _this._checkPropDispatcher[prop].bind(_this)(value, table);
+        const analyzedProp = _this._checkPropDispatcher[prop].bind(_this)(value, table);
 
-        if (propAnalyzed) {
-          analyzedTable[prop] = propAnalyzed;
+        if (analyzedProp) {
+          analyzedTable[prop] = analyzedProp;
         }
       }
 
