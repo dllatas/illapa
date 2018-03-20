@@ -1,16 +1,16 @@
 const synthesis = {
 
   _keywords: {
-    _null:       [' NULL', ' NOT NULL'], // TODO: use SET 
+    _null:       [' NULL', ' NOT NULL'], // TODO: use SET
     _default:    [' DEFAULT ', ''],
     _increment:  [' AUTO_INCREMENT', ''],
   },
-    
+
   _indexPros: {
     unique: 'UNIQUE INDEX ',
     normal: 'INDEX '
   },
-    
+
   _foreign: {
     update: {
       cascade: ' ON UPDATE CASCADE',
@@ -27,26 +27,26 @@ const synthesis = {
   },
 
   _generateProp: function(prop, propValue) {
-        
+
     if (typeof propValue !== 'boolean') {
       return propValue ? this._keywords[prop][0] + propValue : this._keywords[prop][1];
     }
-        
+
     return propValue ? this._keywords[prop][0] : this._keywords[prop][1];
   },
 
   _sanitizeOutput: function(output) {
-		
+
     if (typeof output !== 'string') {
       throw new Error('Output must be a string');
     }
-		
+
     return output.substr(0, (output.length - 2));
   },
 
   _generateColumn: function(props) {
-		
-    const _this = this; 
+
+    const _this = this;
     const propNames = Object.keys(_this._keywords);
 
     const columnSQL = props.reduce(function(a, b) {
@@ -58,9 +58,9 @@ const synthesis = {
 
     return _this._sanitizeOutput(columnSQL);
   },
-    
+
   _generateIndex: function(props) {
-        
+
     const _this = this;
 
     const indexSQL = props.reduce(function(a, b) {
@@ -73,7 +73,7 @@ const synthesis = {
   _generatePrimary: function(props) {
     return 'PRIMARY KEY (' + props.join() + ')';
   },
-    
+
   _generateForeign: function(props) {
 
     const _this = this;
@@ -87,12 +87,12 @@ const synthesis = {
       const second = first.concat('REFERENCES ' + b._table + '(' + Object.keys(b._column).join() + ')');
       return second + (_this._foreign.update[b._update] || '' ) + (_this._foreign.delete[b._delete] || '') + ', ';
     }, '');
-        
+
     return _this._sanitizeOutput(foreignSQL);
   },
 
   _generateTable: function(value) {
-    
+
     if (value._force) {
       return 'CREATE TABLE ' + value._name;
 
@@ -116,7 +116,7 @@ const synthesis = {
     },
     '_foreign': function(props) {
       return this._generateForeign(props);
-    } 
+    }
   },
 
   _generatePropCode: function(schema) {
@@ -129,12 +129,12 @@ const synthesis = {
     }
 
     for (let table of schema) {
-      
+
       const props = Object.keys(table);
       let generatedProp = {};
-      
+
       for (let prop of props) {
-        
+
         const value = table[prop];
         generatedProp[prop] = _this._operationDispatcher[prop].bind(_this)(value);
       }
@@ -175,7 +175,7 @@ const synthesis = {
 
     const partialSchema = _this._generatePropCode(schema);
     const tableCode = _this._generateTableCode(partialSchema);
-    
+
     return tableCode;
   }
 };

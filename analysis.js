@@ -14,7 +14,7 @@ const analysis = {
     if (typeof name !== 'string') {
       throw new Error('It must have be of type string');
     }
-  
+
   },
 
   _checkPropType: function(type) {
@@ -40,7 +40,7 @@ const analysis = {
     }
 
     if (typeof _length !== 'number') {
-      
+
       const parsedLength = Number(_length);
 
       if (isNaN(parsedLength)) {
@@ -60,7 +60,7 @@ const analysis = {
   },
 
   _checkColumn: function(value) {
-		
+
     const _this = this;
 
     const analyzedColumn = value.map((v) => {
@@ -68,20 +68,20 @@ const analysis = {
       _this._checkPropType(v._type);
       _this._checkPropLength(v._length);
       v._default = _this._setPropDefault(v._default);
-		
+
       return v;
     });
 
     return analyzedColumn;
   },
-	
+
   _checkPrimary: function(value, table) {
-    
+
     // Check that value if an array
     if (!Array.isArray(value)) {
       throw new Error('Primary key should be an array');
     }
-    
+
     // Check that all elements in primary array exist on column array
     const columnNames = table._column.map(c => c._name);
 
@@ -93,9 +93,9 @@ const analysis = {
 
     return value;
   },
-	
+
   _checkIndex: function(value, table) {
-    
+
     const _this = this;
     const columnNames = table._column.map(c => c._name);
 
@@ -122,14 +122,14 @@ const analysis = {
           throw new Error('The index column should be a column on the table: ' + c + ' is not one' );
         }
       }
-    
+
     }
 
     return value;
   },
 
   _checkTable: function(value) {
-    
+
     if ( typeof value._name !== 'string' ) {
       throw new Error('The table name must be a string: '.concat(value._name).concat(' is of type ').concat(typeof value._name));
     }
@@ -145,11 +145,11 @@ const analysis = {
 
     return value;
   },
-	
+
   _checkForeign: function(value) {
     return value;
   },
-	
+
   _checkPropDispatcher: {
     _table: function(value, table) {
       return this._checkTable(value, table);
@@ -167,7 +167,7 @@ const analysis = {
       return this._checkForeign(value, table);
     }
   },
-	
+
   run: function(schema) {
 
     const _this = this;
@@ -180,7 +180,7 @@ const analysis = {
 
     // Loop for different tables
     for (let table of schema) {
-      
+
       let analyzedTable = {};
       const props = Object.keys(table);
 
@@ -191,7 +191,7 @@ const analysis = {
           continue;
         }
 
-        const value = table[prop]; 
+        const value = table[prop];
 
         // Start analysis
         const analyzedProp = _this._checkPropDispatcher[prop].bind(_this)(value, table);

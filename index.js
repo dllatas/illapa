@@ -2,7 +2,7 @@ const Analysis = require('./analysis');
 const Synthesis = require('./synthesis');
 
 const builder = {
-	
+
   _run: function(schema) {
 
     // Execute analysis on schema object
