@@ -1,16 +1,16 @@
-### builder
+# Illapa
 
-* **simple** 
-nodeJS generates DDL SQL from a JS object. It can be executed into DB via driver. No need for 3rd party software, only JS.
+Utility that transforms config files describing a relational DB schema into the actual SQL code.
 
-* **single source of truth** 
-JS objects are DB schema. However, there is no enforcement that this remains like this.
+Illapa is the Quechua word for lightning. In the Incan mythology, it was believed that the world was divided in three different entitiesi: upper world, "our" world, and lower world. The lightning was a godness able to cross between the upper and "our" world. As it stands with Illapa, the representation level drops from the highest one to a high one: config files to SQL code.
 
-* **versioning** 
-Each schema modification should be a commit. Use only git.
+The use case for Illapa is a DROP - CREATE - LOAD loop. It is suitable during development phase, but not good for production and evolving a DB over time.
 
-* **opinionated** 
-Each JS object has a fixed template, this keeps SQL declarative syntax. No need for an imperative syntax.
+The library is opinionated since it requires that the config files follow certain structure. Each files is defined by a template.
 
-* **radical** 
-No ALTER syntax supported. DROP - CREATE - LOAD loop.
+### Installation
+### Usage
+### Contributing
+### Roadmap
+### License
+### Project Status
