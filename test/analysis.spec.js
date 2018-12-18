@@ -6,6 +6,59 @@ const {
   _checkIndex,
 } = require('../src/analysis');
 
+
+const context = {
+  _table: {
+    _name: 'context',
+    _force: true
+  },
+  _column: [
+    {
+      _name: 'id',
+      _type: 'INT',
+      _length: 11,
+      _null: false,
+      _increment: true
+    },
+    { _name: 'name',
+      _type: 'VARCHAR',
+      _length: 100,
+      _null: false,
+      _unique: true
+    },
+    { _name: 'digest',
+      _type: 'VARCHAR',
+      _length: 10,
+      _null: false,
+      _unique: true,
+      _default: 'S'
+    },
+  ],
+  _primary: [
+    'id'
+  ],
+  _index: [
+    {
+      _name: 'idx_uq_name',
+      _type: 'unique',
+      _column: ['name']
+    },
+    {
+      _type: 'unique',
+      _name: 'idx_uq_abv',
+      _column: ['digest']
+    }
+  ],
+  _migration: {
+    _oldName: 'ENVIRONMENT',
+    _match: {
+      id: 'id',
+      name: 'name',
+      digest: 'abbreviation'
+    }
+  }
+};
+
 describe('test suite for analysis module', () => {
   describe('_indexType', () => {
     it('should be an array', () => {
@@ -60,7 +113,7 @@ describe('test suite for analysis module', () => {
   });
 
   describe('_checkColumn', () => {
-    const output = _checkColumn({});
+    const output = _checkColumn(context._column);
 
     it('should return an array', () => {
       assert.ok(Array.isArray(output));
@@ -77,15 +130,15 @@ describe('test suite for analysis module', () => {
 
   describe('_checkPrimary', () => {
     it('should throw an error when value is not an array', () => {
-      assert.throws(() => { analysis._checkPrimary('id', {}); });
+      assert.throws(() => { analysis._checkPrimary('id', context); });
     });
 
     it('should throw an error when value is array but column not defined on table', () => {
-      assert.throws(() => { analysis._checkPrimary(['id2'], {}); });
+      assert.throws(() => { analysis._checkPrimary(['id2'], context); });
     });
 
     it('should return an array', () => {
-      assert.ok(Array.isArray(analysis._checkPrimary(['id'], {})));
+      assert.ok(Array.isArray(analysis._checkPrimary(['id'], context)));
     });
   });
 
@@ -104,32 +157,24 @@ describe('test suite for analysis module', () => {
     ];
 
     it('should throw an error when value is not an array', () => {
-      assert.throws(() => { _checkIndex('_index', {}); });
+      assert.throws(() => { _checkIndex('_index', context); });
     });
 
     it('should throw an error when name is not a string', () => {
-      assert.throws(() => { _checkIndex(input, {}); });
+      assert.throws(() => { _checkIndex(input, context); });
     });
 
     it('should throw an error when index type is not supported', () => {
-      assert.throws(() => { _checkIndex(input, {}); });
+      assert.throws(() => { _checkIndex(input, context); });
     });
 
     it('should throw an error when index column is not defined', () => {
-      assert.throws(() => { _checkIndex(input, {}); });
+      assert.throws(() => { _checkIndex(input, context); });
     });
 
     it('should return an array', () => {
       assert.ok(Array.isArray(_checkIndex({}, {})));
     });
-  });
-
-  describe('_checkName', () => {
-    it('', () => {});
-  });
-
-  describe('_checkForeign', () => {
-    it('', () => {});
   });
 
   describe('_checkPropDispatcher', () => {

@@ -11,7 +11,9 @@ const {
 } = require('../src/synthesis');
 
 describe('test suite for synthesis module', () => {
-  const contextAnalyzed = [];
+  const contextAnalyzed = [{
+    _column: 'id INT(11) NOT NULL AUTO_INCREMENT, name VARCHAR(100) NOT NULL, digest VARCHAR(10) NOT NULL DEFAULT \'\'S\'\'',
+  }];
   const pillarAnalyzed = [];
 
   describe('_keywords', () => {
@@ -117,7 +119,8 @@ describe('test suite for synthesis module', () => {
     });
   });
 
-  describe('_generateColumn', () => {
+
+  /*describe('_generateColumn', () => {
     const output = generateColumn(contextAnalyzed[0]._column);
 
     it('should return a string', () => {
@@ -164,13 +167,13 @@ describe('test suite for synthesis module', () => {
       assert.strictEqual(output, 'CONSTRAINT fk_pillar_context FOREIGN KEY(context_id) REFERENCES context(id) ON UPDATE CASCADE ON DELETE CASCADE');
     });
 
-    /* it('should generate a string with SQL code for UPDATE ON CASCADE', () => {
+     it('should generate a string with SQL code for UPDATE ON CASCADE', () => {
     assert();
   });
 
   it('should generate a string with SQL code for DELETE ON CASCADE', () => {
     assert();
-  }); */
+  }); 
   });
 
   describe('_generateTable', () => {
@@ -208,7 +211,7 @@ describe('test suite for synthesis module', () => {
       assert.ok(synthesis._operationDispatcher._foreign);
     });
   });
-
+*/
   describe('_generatePropCode', () => {
     const result = [{
       _table: 'CREATE TABLE context',
