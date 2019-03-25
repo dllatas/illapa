@@ -10,7 +10,7 @@ const {
 const context = {
   _table: {
     _name: 'context',
-    _force: true
+    _force: true,
   },
   _column: [
     {
@@ -18,45 +18,47 @@ const context = {
       _type: 'INT',
       _length: 11,
       _null: false,
-      _increment: true
+      _increment: true,
     },
-    { _name: 'name',
+    {
+      _name: 'name',
       _type: 'VARCHAR',
       _length: 100,
       _null: false,
-      _unique: true
+      _unique: true,
     },
-    { _name: 'digest',
+    {
+      _name: 'digest',
       _type: 'VARCHAR',
       _length: 10,
       _null: false,
       _unique: true,
-      _default: 'S'
+      _default: 'S',
     },
   ],
   _primary: [
-    'id'
+    'id',
   ],
   _index: [
     {
       _name: 'idx_uq_name',
       _type: 'unique',
-      _column: ['name']
+      _column: ['name'],
     },
     {
       _type: 'unique',
       _name: 'idx_uq_abv',
-      _column: ['digest']
-    }
+      _column: ['digest'],
+    },
   ],
   _migration: {
     _oldName: 'ENVIRONMENT',
     _match: {
       id: 'id',
       name: 'name',
-      digest: 'abbreviation'
-    }
-  }
+      digest: 'abbreviation',
+    },
+  },
 };
 
 describe('test suite for analysis module', () => {
@@ -101,10 +103,10 @@ describe('test suite for analysis module', () => {
   });
 
   describe('_setPropDefault', () => {
-    /*it('should set default for string', () => {
+    /* it('should set default for string', () => {
       const input = analysis._setPropDefault('S');
       assert.strictEqual(input, '\'\S\'');
-    });*/
+    }); */
 
     it('should set default for a string representation of a number ', () => {
       const input = analysis._setPropDefault('6');
@@ -191,9 +193,9 @@ describe('test suite for analysis module', () => {
     });
   });
 
-  /*describe('run', () => {
+  /* describe('run', () => {
     it('should return an array', () => {
       assert.ok(Array.isArray(Run({})));
     });
-  });*/
+  }); */
 });

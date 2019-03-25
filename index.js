@@ -1,21 +1,3 @@
-const Analysis = require('./analysis');
-const Synthesis = require('./synthesis');
+const illapa = require('./src/');
 
-const builder = {
-
-  _run: function(schema) {
-
-    // Execute analysis on schema object
-    const analyzedSchema = Analysis(schema);
-    console.log('Schema analysis finished succesfully.');
-
-    // Generate SQL code from analyzed schema
-    const sqlCode = Synthesis(analyzedSchema);
-    console.log('Schema synthesis finished succesfully.');
-
-    return sqlCode;
-  }
-
-};
-
-module.exports = builder._run.bind(builder);
+module.exports = illapa;
