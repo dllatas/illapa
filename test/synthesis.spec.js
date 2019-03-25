@@ -3,9 +3,6 @@ const { assert } = require('chai');
 const {
   synthesis,
   generateProp,
-  generateColumn,
-  generateIndex,
-  generateForeign,
   generatePropCode,
   generateTableCode,
 } = require('../src/synthesis');
@@ -14,7 +11,6 @@ describe('test suite for synthesis module', () => {
   const contextAnalyzed = [{
     _column: 'id INT(11) NOT NULL AUTO_INCREMENT, name VARCHAR(100) NOT NULL, digest VARCHAR(10) NOT NULL DEFAULT \'\'S\'\'',
   }];
-  const pillarAnalyzed = [];
 
   describe('_keywords', () => {
     it('should be an object', () => {
@@ -120,7 +116,7 @@ describe('test suite for synthesis module', () => {
   });
 
 
-  /*describe('_generateColumn', () => {
+  /* describe('_generateColumn', () => {
     const output = generateColumn(contextAnalyzed[0]._column);
 
     it('should return a string', () => {
@@ -128,7 +124,11 @@ describe('test suite for synthesis module', () => {
     });
 
     it('should generate a string with SQL code including complement for columns definition', () => {
-      assert.strictEqual(output, 'id INT(11) NOT NULL AUTO_INCREMENT, name VARCHAR(100) NOT NULL, digest VARCHAR(10) NOT NULL DEFAULT \'\'S\'\'');
+      assert.strictEqual(
+        output,
+        `id INT(11) NOT NULL AUTO_INCREMENT,
+         name VARCHAR(100) NOT NULL,
+         digest VARCHAR(10) NOT NULL DEFAULT \'\'S\'\'`);
     });
   });
 
@@ -140,7 +140,9 @@ describe('test suite for synthesis module', () => {
     });
 
     it('should generate a string with SQL code for index definition', () => {
-      assert.deepStrictEqual(output, 'UNIQUE INDEX idx_uq_name(name), UNIQUE INDEX idx_uq_abv(digest)');
+      assert.deepStrictEqual(
+        output,
+        'UNIQUE INDEX idx_uq_name(name), UNIQUE INDEX idx_uq_abv(digest)');
     });
   });
 
@@ -164,7 +166,13 @@ describe('test suite for synthesis module', () => {
     });
 
     it('should generate a string with SQL code for foreign key definition', () => {
-      assert.strictEqual(output, 'CONSTRAINT fk_pillar_context FOREIGN KEY(context_id) REFERENCES context(id) ON UPDATE CASCADE ON DELETE CASCADE');
+      assert.strictEqual(
+        output,
+        `CONSTRAINT fk_pillar_context
+         FOREIGN KEY(context_id)
+         REFERENCES context(id)
+         ON UPDATE CASCADE ON DELETE CASCADE`
+      );
     });
 
      it('should generate a string with SQL code for UPDATE ON CASCADE', () => {
@@ -173,7 +181,7 @@ describe('test suite for synthesis module', () => {
 
   it('should generate a string with SQL code for DELETE ON CASCADE', () => {
     assert();
-  }); 
+  });
   });
 
   describe('_generateTable', () => {
