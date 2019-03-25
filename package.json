@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "nyc mocha --recursive",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "lint-fix": "eslint --fix ."
   },
   "repository": {
     "type": "git",
@@ -13,10 +14,11 @@
   },
   "keywords": [
     "db",
+    "schema",
+    "ddl",
     "sql",
     "yaml",
-    "sb-schema",
-    "ddl-parser"
+    "json"
   ],
   "author": "Daniel Spiers",
   "license": "MIT",
@@ -31,6 +33,9 @@
     "eslint-plugin-import": "^2.14.0",
     "husky": "^1.2.1",
     "mocha": "^5.2.0",
-    "nyc": "^13.1.0"
+    "nyc": "^13.3.0"
+  },
+  "dependencies": {
+    "teseo": "^0.1.5"
   }
 }

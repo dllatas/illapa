@@ -11,6 +11,20 @@ The use case for Illapa is a DROP - CREATE - LOAD loop. It is suitable during de
 The library is opinionated since it requires that the config files follow certain structure. Each files is defined by a template.
 
 ### Installation
+### Flow 
+
+The tables dependency is sorted by using Teseo. In that sense, Teseo can read the files and process it. However, at the moment Teseo does not return the content of the files sorted.
+
+
+01. input the config files
+	- define a dir and the format
+	- inject schema as a dependency
+
+02. read files and parse them from config format to js
+
+03. order them using teseo
+
+04. create schema using illapa
 ### Usage
 ### Contributing
 ### Roadmap
