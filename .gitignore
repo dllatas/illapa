@@ -62,3 +62,7 @@ typings/
 
 # swap files
 *.swp
+
+# Dev stuff 
+src/build.js
+src/schema
