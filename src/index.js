@@ -10,7 +10,6 @@ const main = (schema, flavor, master, name) => {
   // Execute analysis on schema object
   const analyzedSchema = analysis(sortedSchema);
   console.info('Schema analysis finished succesfully.');
-  console.log(analyzedSchema);
 
   // Generate SQL code from analyzed schema
   const ddlCode = synthesis(analyzedSchema, flavor);

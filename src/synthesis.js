@@ -1,7 +1,8 @@
-const _keywords = {
-  _null: [' NULL', ' NOT NULL'],
-  _default: [' DEFAULT ', ''],
-  _increment: [' AUTO_INCREMENT', ''],
+const postBuffer = [];
+
+const _extraOrder = {
+  pg: ['_increment', '_null', '_default'],
+  mysql: ['_null', '_default', '_increment'],
 };
 
 const _indexPros = {
@@ -31,58 +32,130 @@ const sanitize = (output) => {
   return output.substr(0, (output.length - 2));
 };
 
-const generateProp = (prop, propValue) => {
-  if (typeof propValue !== 'boolean') {
-    return propValue ? _keywords[prop][0] + propValue : _keywords[prop][1];
+const generateColumnBasic = (flavor, column) => {
+  const flavors = {
+    pg: {
+      INT: column._increment ? `${column._name}` : `${column._name} ${column._type}`,
+      VARCHAR: `${column._name} ${column._type}(${column._length})`,
+      DOUBLE: `${column._name} numeric (${column._length})`,
+    },
+    mysql: {
+      INT: `${column._name} ${column._type}(${column._length})`,
+      VARCHAR: `${column._name} ${column._type}(${column._length})`,
+      DOUBLE: `${column._name} ${column._type}(${column._length})`,
+    },
+  };
+
+  return flavors[flavor][column._type];
+};
+
+const generetaExtra = (flavor, key, value) => {
+  const flavors = {
+    pg: {
+      _null: (t, v) => v ? ' NULL' : ' NOT NULL',
+      _default: (t, v) => (t !== 'boolean' && v) ? ` DEFAULT ${v}` : '',
+      _increment: (t, v) => v ? ' SERIAL' : '',
+    },
+    mysql: {
+      _null: (t, v) => v ? ' NULL' : ' NOT NULL',
+      _default: (t, v) => (t !== 'boolean' && v) ? ` DEFAULT ${v}` : '',
+      _increment: (t, v) => v ? ' AUTO_INCREMENT' : '',
+    },
+  };
+  const extra = flavors[flavor][key](typeof value, value);
+  return extra;
+};
+
+const generateColumnExtra = (flavor, column) => _extraOrder[flavor].reduce(
+  (acc, columnKey) => {
+    acc = `${acc}${generetaExtra(flavor, columnKey, column[columnKey])}`;
+    return acc;
+  }, '',
+);
+
+const generateIndexSingle = (flavor, index, table) => {
+  const flavors = {
+    pg: {
+      unique: idx => `CONSTRAINT ${idx._name} UNIQUE (${idx._column.join()}), `,
+      normal: (idx, t) => {
+        const indexSQL = `CREATE INDEX ${idx._name} ON ${t._table._name} (${index._column.join()});`;
+        postBuffer.push(indexSQL);
+        return '';
+      },
+    },
+    mysql: {
+      unique: idx => `UNIQUE INDEX ${idx._name}(${idx._column.join()}), `,
+      normal: idx => `INDEX ${idx._name}(${idx._column.join()}), `,
+    },
+  };
+
+  return flavors[flavor][index._type](index, table);
+};
+
+const generateForeignSingle = (flavor, foreign, table) => {
+  const foreignColumns = Object.keys(foreign._column);
+  const columns = foreignColumns.map(fc => foreign._column[fc]);
+
+  const updateRule = (_foreign.update[foreign._update] || '');
+  const deleteRule = (_foreign.delete[foreign._delete] || '');
+
+  if (table._table._name === foreign._table) {
+    const alter = {
+      pg: `ALTER TABLE ${foreign._table} ADD CONSTRAINT ${foreign._name} FOREIGN KEY (${columns.join()}) REFERENCES ${foreign._table} (${foreignColumns.join()}) ${deleteRule} ${updateRule}, `,
+      mysql: `ALTER TABLE ${foreign._table} ADD CONSTRAINT ${foreign._name} FOREIGN KEY (${columns.join()}) REFERENCES ${foreign._table} (${foreignColumns.join()}) ${deleteRule} ${updateRule}, `,
+    };
+    postBuffer.push(sanitize(alter[flavor]) + ';');
+    return '';
   }
-  return propValue ? _keywords[prop][0] : _keywords[prop][1];
+
+  const flavors = {
+    pg: `CONSTRAINT ${foreign._name} FOREIGN KEY (${columns.join()}) REFERENCES ${foreign._table} (${foreignColumns.join()}) ${deleteRule} ${updateRule}, `,
+    mysql: `CONSTRAINT ${foreign._name} FOREIGN KEY (${columns.join()}) REFERENCES ${foreign._table} (${foreignColumns.join()}) ${updateRule} ${deleteRule}, `,
+  };
+
+  const foreignSQL = flavors[flavor];
+  return foreignSQL;
 };
 
 // Dispatch actions BEGIN
-const generateForeign = (flavor, props) => {
-  const foreignSQL = props.reduce((acc, prop) => {
-    const keys = Object.keys(prop._column);
-    const hostColumns = keys.map(k => prop._column[k]);
-    const first = acc.concat(`CONSTRAINT ${prop._name} FOREIGN KEY(${hostColumns.join()}) `);
-    const second = first.concat(`REFERENCES ${prop._table}(${Object.keys(prop._column).join()})`);
-    return `${second} ${(_foreign.update[prop._update] || '')} ${(_foreign.delete[prop._delete] || '')}, `;
+const generateForeign = (flavor, foreignKeys, table) => {
+  const foreignSQL = foreignKeys.reduce((acc, foreignKey) => {
+    acc = acc + generateForeignSingle(flavor, foreignKey, table);
+    return acc;
   }, '');
   return sanitize(foreignSQL);
 };
 
-const generateIndex = (flavor, props) => {
-  const indexSQL = props.reduce((acc, prop) => {
-    acc = acc.concat(`${_indexPros[prop._type]}${prop._name}(${prop._column.join()}), `);
+const generateIndex = (flavor, indexList, table) => {
+  const indexSQL = indexList.reduce((acc, index) => {
+    acc = acc + generateIndexSingle(flavor, index, table);
     return acc;
   }, '');
   return sanitize(indexSQL);
 };
 
-const generatePrimary = (flavor, prop) => {
-  const primarySQL = `PRIMARY KEY (${prop.join(', ')})`;
-  return primarySQL;
+const generatePrimary = (flavor, primary) => {
+  const flavors = {
+    pg: `PRIMARY KEY (${primary.join(', ')})`,
+    mysql: `PRIMARY KEY (${primary.join(', ')})`,
+  };
+  return flavors[flavor];
 };
 
-const generateColumn = (flavor, propList) => {
-  const propNames = Object.keys(_keywords);
-
-  const columnSQL = propList.reduce((acc, prop) => {
-    const complement = propNames.reduce((comp, propName) => {
-      const generatedProp = generateProp(propName, prop[propName]);
-      return comp.concat(generatedProp);
-    }, '');
-    return acc.concat(`${prop._name} ${prop._type}(${prop._length})${complement}, `);
+const generateColumn = (flavor, columns) => {
+  const columnsSQL = columns.reduce((acc, column) => {
+    acc = acc + generateColumnBasic(flavor, column) + generateColumnExtra(flavor, column) + ', ';
+    return acc;
   }, '');
-
-  return sanitize(columnSQL);
+  return sanitize(columnsSQL);
 };
 
 const generateTable = (flavor, prop) => {
-  const options = {
+  const flavors = {
     pg: prop._force ? `CREATE TABLE ${prop._name}` : `CREATE TABLE IF NOT EXISTS ${prop._name}`,
     mysql: prop._force ? `CREATE TABLE ${prop._name}` : `CREATE TABLE IF NOT EXISTS ${prop._name}`,
   };
-  return options[flavor];
+  return flavors[flavor];
 };
 
 // Dispatch actions END
@@ -124,17 +197,21 @@ const merge = (decodedSchema) => {
 
   for (const table of decodedSchema) {
     const props = Object.keys(table).filter(p => p !== TABLE_PROP);
-    const tableDefintion = props.reduce((acc, prop) => acc.concat(`${table[prop]}, `), '');
-
-
-    ddl.push(`${table[TABLE_PROP]} (${sanitize(tableDefintion)})`);
+    const tableDefintion = props.reduce((acc, prop) => {
+      acc = acc + (table[prop].length === 0 ? '' : `${table[prop]}, `);
+      return acc;
+    }, '');
+    ddl.push(`${table[TABLE_PROP]} (${sanitize(tableDefintion)});`);
   }
-  return ddl;
+
+  // Load buffer
+  const result = [...ddl, ...postBuffer];
+
+  return result;
 };
 
 const synthesis = (schema, flavor = 'pg') => {
   const decodedSchema = decodeSchema(schema, flavor);
-  //console.log(decodedSchema);
   const ddl = merge(decodedSchema, flavor);
   return ddl;
 };
