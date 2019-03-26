@@ -30,3 +30,11 @@ The tables dependency is sorted by using Teseo. In that sense, Teseo can read th
 ### Roadmap
 ### License
 ### Project Status
+
+### Testing with Docker
+POSTGRESS_passeord MIGHT NOT be needed
+```
+docker run --name pg-test -e POSTGRESS_PASSWORD=admin -d postgres
+docker exec -it pg-test psql -U postgres
+
+```
