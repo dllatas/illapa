@@ -36,6 +36,7 @@
     "nyc": "^13.3.0"
   },
   "dependencies": {
-    "teseo": "^0.1.5"
+    "teseo": "^0.1.5",
+    "winston": "^3.2.1"
   }
 }
