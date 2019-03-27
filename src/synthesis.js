@@ -1,4 +1,4 @@
-const postBuffer = [];
+let postBuffer = [];
 
 const _extraOrder = {
   pg: ['_increment', '_null', '_default'],
@@ -26,9 +26,9 @@ const _foreign = {
 };
 
 const sanitize = (output) => {
-  if (typeof output !== 'string') {
+  /*if (typeof output !== 'string') {
     throw new Error('Output must be a string');
-  }
+  }*/
   return output.substr(0, (output.length - 2));
 };
 
@@ -88,7 +88,6 @@ const generateIndexSingle = (flavor, index, table) => {
       normal: idx => `INDEX ${idx._name}(${idx._column.join()}), `,
     },
   };
-
   return flavors[flavor][index._type](index, table);
 };
 
@@ -191,9 +190,9 @@ const merge = (decodedSchema) => {
   const ddl = [];
   const TABLE_PROP = '_table';
 
-  if (!Array.isArray(decodedSchema)) {
+  /*if (!Array.isArray(decodedSchema)) {
     decodedSchema = [decodedSchema];
-  }
+  }*/
 
   for (const table of decodedSchema) {
     const props = Object.keys(table).filter(p => p !== TABLE_PROP);
@@ -211,6 +210,7 @@ const merge = (decodedSchema) => {
 };
 
 const synthesis = (schema, flavor = 'pg') => {
+  postBuffer = [];
   const decodedSchema = decodeSchema(schema, flavor);
   const ddl = merge(decodedSchema, flavor);
   return ddl;
