@@ -66,3 +66,4 @@ typings/
 # Dev stuff 
 src/build.js
 src/schema
+test2/
