@@ -38,3 +38,10 @@ docker run --name pg-test -e POSTGRESS_PASSWORD=admin -d postgres
 docker exec -it pg-test psql -U postgres
 
 ```
+
+
+docker run --name mysql-test -e MYSQL_ROOT_HOST=* -e MYSQL_ROOT_PASSWORD=admin -d percona:5
+docker exec -it mysql-test bash
+bash-4.2$ mysql -u root -p
+
+
