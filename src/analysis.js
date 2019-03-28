@@ -193,10 +193,7 @@ const analysis = (schema) => {
     const props = Object.keys(table).filter(k => !PROPS_TO_FILTER.includes(k));
 
     for (let j = 0; j < props.length; j += 1) {
-      const analyzedProp = dispatcher[props[j]](table[props[j]], table, props[j]);
-      if (analyzedProp) {
-        analyzedTable[props[j]] = analyzedProp;
-      }
+      analyzedTable[props[j]] = dispatcher[props[j]](table[props[j]], table, props[j]);
     }
     analyzedSchema.push(analyzedTable);
   }
