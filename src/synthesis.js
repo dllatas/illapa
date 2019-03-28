@@ -5,11 +5,6 @@ const _extraOrder = {
   mysql: ['_null', '_default', '_increment'],
 };
 
-const _indexPros = {
-  unique: 'UNIQUE INDEX ',
-  normal: 'INDEX ',
-};
-
 const _foreign = {
   update: {
     cascade: ' ON UPDATE CASCADE',
@@ -25,12 +20,7 @@ const _foreign = {
   },
 };
 
-const sanitize = (output) => {
-  /*if (typeof output !== 'string') {
-    throw new Error('Output must be a string');
-  }*/
-  return output.substr(0, (output.length - 2));
-};
+const sanitize = output => output.substr(0, (output.length - 2));
 
 const generateColumnBasic = (flavor, column) => {
   const flavors = {
@@ -100,16 +90,16 @@ const generateForeignSingle = (flavor, foreign, table) => {
 
   if (table._table._name === foreign._table) {
     const alter = {
-      pg: `ALTER TABLE ${foreign._table} ADD CONSTRAINT ${foreign._name} FOREIGN KEY (${columns.join()}) REFERENCES ${foreign._table} (${foreignColumns.join()}) ${deleteRule} ${updateRule}, `,
-      mysql: `ALTER TABLE ${foreign._table} ADD CONSTRAINT ${foreign._name} FOREIGN KEY (${columns.join()}) REFERENCES ${foreign._table} (${foreignColumns.join()}) ${deleteRule} ${updateRule}, `,
+      pg: `ALTER TABLE ${foreign._table} ADD CONSTRAINT ${foreign._name} FOREIGN KEY (${columns.join()}) REFERENCES ${foreign._table} (${foreignColumns.join()})${deleteRule}${updateRule}, `,
+      mysql: `ALTER TABLE ${foreign._table} ADD CONSTRAINT ${foreign._name} FOREIGN KEY (${columns.join()}) REFERENCES ${foreign._table} (${foreignColumns.join()})${deleteRule}${updateRule}, `,
     };
     postBuffer.push(sanitize(alter[flavor]) + ';');
     return '';
   }
 
   const flavors = {
-    pg: `CONSTRAINT ${foreign._name} FOREIGN KEY (${columns.join()}) REFERENCES ${foreign._table} (${foreignColumns.join()}) ${deleteRule} ${updateRule}, `,
-    mysql: `CONSTRAINT ${foreign._name} FOREIGN KEY (${columns.join()}) REFERENCES ${foreign._table} (${foreignColumns.join()}) ${updateRule} ${deleteRule}, `,
+    pg: `CONSTRAINT ${foreign._name} FOREIGN KEY (${columns.join()}) REFERENCES ${foreign._table} (${foreignColumns.join()})${deleteRule}${updateRule}, `,
+    mysql: `CONSTRAINT ${foreign._name} FOREIGN KEY (${columns.join()}) REFERENCES ${foreign._table} (${foreignColumns.join()})${updateRule}${deleteRule}, `,
   };
 
   const foreignSQL = flavors[flavor];
@@ -189,10 +179,6 @@ const decodeSchema = (schema, flavor) => {
 const merge = (decodedSchema) => {
   const ddl = [];
   const TABLE_PROP = '_table';
-
-  /*if (!Array.isArray(decodedSchema)) {
-    decodedSchema = [decodedSchema];
-  }*/
 
   for (const table of decodedSchema) {
     const props = Object.keys(table).filter(p => p !== TABLE_PROP);
