@@ -11,7 +11,12 @@ const main = (schema, flavor, master, name) => {
 
   // Execute analysis on schema object
   logger.info('Schema analysis started.');
-  const analyzedSchema = analysis(sortedSchema);
+  const analyzed = analysis(sortedSchema);
+  if (analyzed.errorList.length > 0) {
+    logger.error('The schema needs some attention!');
+    analyzed.errorList.map(e => logger.error(JSON.stringify(e)));
+    return '';
+  }
   logger.info('Schema analysis finished succesfully.');
 
   // Generate SQL code from analyzed schema
