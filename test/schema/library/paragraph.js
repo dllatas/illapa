@@ -46,8 +46,6 @@ const paragraph = {
       _name: 'fk_paragraph_chapter',
       _table: 'chapter',
       _column: { id: 'chapter_id' },
-      _update: 'cascade',
-      _delete: 'cascade',
     },
   ],
 };
