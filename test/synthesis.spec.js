@@ -41,22 +41,22 @@ describe('Synthesis test module', () => {
   describe('Generate code for library.book', () => {
     const table = 'book';
     it('Should generate columns and PK DDL code for Postgres.', () => {
-      const analyzed = analysis(library.filter(l => l._table._name === table));
-      const actual = synthesis(analyzed, POSTGRES);
+      const { schema } = analysis(library.filter(l => l._table._name === table));
+      const actual = synthesis(schema, POSTGRES);
       assert.isArray(actual);
       assert.lengthOf(actual, 1);
       assert.strictEqual(actual[0], expected[POSTGRES][table]);
     });
     it('Should generate columns and PK DDL code for MySQL', () => {
-      const analyzed = analysis(library.filter(l => l._table._name === table));
-      const actual = synthesis(analyzed, MYSQL);
+      const { schema } = analysis(library.filter(l => l._table._name === table));
+      const actual = synthesis(schema, MYSQL);
       assert.isArray(actual);
       assert.lengthOf(actual, 1);
       assert.strictEqual(actual[0], expected[MYSQL][table]);
     });
     it('Should generate columns and PK DDL code for Postgres using the default value for flavor.', () => {
-      const analyzed = analysis(library.filter(l => l._table._name === table));
-      const actual = synthesis(analyzed);
+      const { schema } = analysis(library.filter(l => l._table._name === table));
+      const actual = synthesis(schema);
       assert.isArray(actual);
       assert.lengthOf(actual, 1);
       assert.strictEqual(actual[0], expected[POSTGRES][table]);
@@ -65,15 +65,15 @@ describe('Synthesis test module', () => {
   describe('Generate code for library.chapter', () => {
     const table = 'chapter';
     it('Should generate columns, PK and FK DDL code for Postgres', () => {
-      const analyzed = analysis(library.filter(l => l._table._name === table));
-      const actual = synthesis(analyzed, POSTGRES);
+      const { schema } = analysis(library.filter(l => l._table._name === table));
+      const actual = synthesis(schema, POSTGRES);
       assert.isArray(actual);
       assert.lengthOf(actual, 1);
       assert.strictEqual(actual[0], expected[POSTGRES][table]);
     });
     it('Should generate columns, PK and FK DDL code for MySQL', () => {
-      const analyzed = analysis(library.filter(l => l._table._name === table));
-      const actual = synthesis(analyzed, MYSQL);
+      const { schema } = analysis(library.filter(l => l._table._name === table));
+      const actual = synthesis(schema, MYSQL);
       assert.isArray(actual);
       assert.lengthOf(actual, 1);
       assert.strictEqual(actual[0], expected[MYSQL][table]);
@@ -82,16 +82,16 @@ describe('Synthesis test module', () => {
   describe('Generate code for library.paragraph', () => {
     const table = 'paragraph';
     it('Should generate columns, PK, index and FK DDL code for Postgres', () => {
-      const analyzed = analysis(library.filter(l => l._table._name === table));
-      const actual = synthesis(analyzed, POSTGRES);
+      const { schema } = analysis(library.filter(l => l._table._name === table));
+      const actual = synthesis(schema, POSTGRES);
       assert.isArray(actual);
       assert.lengthOf(actual, 2);
       assert.strictEqual(actual[0], expected[POSTGRES][table].table);
       assert.strictEqual(actual[1], expected[POSTGRES][table].index);
     });
     it('Should generate columns, PK, index and FK DDL code for MySQL', () => {
-      const analyzed = analysis(library.filter(l => l._table._name === table));
-      const actual = synthesis(analyzed, MYSQL);
+      const { schema } = analysis(library.filter(l => l._table._name === table));
+      const actual = synthesis(schema, MYSQL);
       assert.isArray(actual);
       assert.lengthOf(actual, 1);
       assert.strictEqual(actual[0], expected[MYSQL][table]);
@@ -100,15 +100,15 @@ describe('Synthesis test module', () => {
   describe('Generate code for library.book_author', () => {
     const table = 'book_author';
     it('Should generate columns, PK, index and FK DDL code for Postgres and parse object to array', () => {
-      const analyzed = analysis(library.filter(l => l._table._name === table));
-      const actual = synthesis(analyzed, POSTGRES);
+      const { schema } = analysis(library.filter(l => l._table._name === table));
+      const actual = synthesis(schema, POSTGRES);
       assert.isArray(actual);
       assert.lengthOf(actual, 1);
       assert.strictEqual(actual[0], expected[POSTGRES][table]);
     });
     it('Should generate columns, PK, index and FK DDL code for MySQL', () => {
-      const analyzed = analysis(library.filter(l => l._table._name === table));
-      const actual = synthesis(analyzed, MYSQL);
+      const { schema } = analysis(library.filter(l => l._table._name === table));
+      const actual = synthesis(schema, MYSQL);
       assert.isArray(actual);
       assert.lengthOf(actual, 1);
       assert.strictEqual(actual[0], expected[MYSQL][table]);
@@ -117,45 +117,20 @@ describe('Synthesis test module', () => {
   describe('Generate code for library.author', () => {
     const table = 'author';
     it('Should generate columns, PK, index, recursive FK and FK DDL code for Postgres and parse object to array', () => {
-      const analyzed = analysis(library.filter(l => l._table._name === table));
-      const actual = synthesis(analyzed[0], POSTGRES);
+      const { schema } = analysis(library.filter(l => l._table._name === table));
+      const actual = synthesis(schema[0], POSTGRES);
       assert.isArray(actual);
       assert.lengthOf(actual, 2);
       assert.strictEqual(actual[0], expected[POSTGRES][table].table);
       assert.strictEqual(actual[1], expected[POSTGRES][table].fk);
     });
     it('Should generate columns, PK, index and FK DDL code for MySQL', () => {
-      const analyzed = analysis(library.filter(l => l._table._name === table));
-      const actual = synthesis(analyzed, MYSQL);
+      const { schema } = analysis(library.filter(l => l._table._name === table));
+      const actual = synthesis(schema, MYSQL);
       assert.isArray(actual);
       assert.lengthOf(actual, 2);
       assert.strictEqual(actual[0], expected[MYSQL][table].table);
       assert.strictEqual(actual[1], expected[MYSQL][table].fk);
-    });
-  });
-  describe('Generate code for library', () => {
-    it('Should generate code for the whole schema in Postgres', () => {
-      const actual = main(library, POSTGRES, '_foreign._table', '_table._name');
-      assert.isArray(actual);
-      assert.lengthOf(actual, 7);
-      assert.strictEqual(actual[0], expected[POSTGRES].book);
-      assert.strictEqual(actual[1], expected[POSTGRES].chapter);
-      assert.strictEqual(actual[2], expected[POSTGRES].paragraph.table);
-      assert.strictEqual(actual[3], expected[POSTGRES].author.table);
-      assert.strictEqual(actual[4], expected[POSTGRES].book_author);
-      assert.strictEqual(actual[5], expected[POSTGRES].paragraph.index);
-      assert.strictEqual(actual[6], expected[POSTGRES].author.fk);
-    });
-    it('Should generate code for the whole schema in MySQL', () => {
-      const actual = main(library, MYSQL, '_foreign._table', '_table._name');
-      assert.isArray(actual);
-      assert.lengthOf(actual, 6);
-      assert.strictEqual(actual[0], expected[MYSQL].book);
-      assert.strictEqual(actual[1], expected[MYSQL].chapter);
-      assert.strictEqual(actual[2], expected[MYSQL].paragraph);
-      assert.strictEqual(actual[3], expected[MYSQL].author.table);
-      assert.strictEqual(actual[4], expected[MYSQL].book_author);
-      assert.strictEqual(actual[5], expected[MYSQL].author.fk);
     });
   });
 });
