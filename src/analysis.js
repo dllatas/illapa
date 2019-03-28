@@ -3,6 +3,8 @@ const indexType = [
   'normal',
 ];
 
+const PROPS_TO_FILTER = ['_migration', 'exported'];
+
 const checkPropName = (name) => {
   if (!name) {
     throw new Error('A name must be defined for a column');
@@ -129,26 +131,25 @@ const dispatcher = {
   _foreign: (value, table) => checkForeign(value, table),
 };
 
-const analysis = schema => {
+const analysis = (schema) => {
   const analyzedSchema = [];
 
   if (!Array.isArray(schema)) {
     schema = [schema];
   }
+  schema = JSON.parse(JSON.stringify(schema));
 
-  // Loop for different tables
-  for (const table of schema) {
+  for (let i = 0; i < schema.length; i += 1) {
     const analyzedTable = {};
-    const props = Object.keys(table).filter(k => !['_migration', 'exported'].includes(k));
+    const table = schema[i];
+    const props = Object.keys(table).filter(k => !PROPS_TO_FILTER.includes(k));
 
-    // Start analysis by loop for props on table object
-    for (const prop of props) {
-      const analyzedProp = dispatcher[prop](table[prop], table);
+    for (let j = 0; j < props.length; j += 1) {
+      const analyzedProp = dispatcher[props[j]](table[props[j]], table);
       if (analyzedProp) {
-        analyzedTable[prop] = analyzedProp;
+        analyzedTable[props[j]] = analyzedProp;
       }
     }
-
     analyzedSchema.push(analyzedTable);
   }
 
