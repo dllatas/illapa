@@ -1,7 +1,7 @@
-const draw = require('./draw');
 const library = require('./library');
+const course = require('./course');
 
 module.exports = {
-  draw,
   library,
+  course,
 };
