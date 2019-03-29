@@ -1,6 +1,6 @@
 # Illapa
 
-[![Build Status](https://travis-ci.com/dllatas/illapa.svg?branch=master)](https://travis-ci.com/dllatas/illapa)
+[![CircleCI](https://circleci.com/gh/dllatas/illapa.svg?style=svg)](https://circleci.com/gh/dllatas/illapa)
 
 Utility that transforms config files describing a relational DB schema into the actual SQL code.
 
