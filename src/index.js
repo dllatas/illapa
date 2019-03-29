@@ -1,7 +1,9 @@
 const teseo = require('teseo');
+const chumpi = require('chumpi');
 const analysis = require('./analysis');
 const synthesis = require('./synthesis');
-const logger = require('./logging');
+
+const logger = chumpi.logger('illapa');
 
 const main = (schema, flavor, master, name) => {
   // Execute analysis on schema object
