@@ -4,7 +4,7 @@
   "description": "Utility that transforms config files describing a relational DB schema into the actual SQL DDL code ",
   "main": "index.js",
   "scripts": {
-    "test": "nyc mocha --recursive",
+    "test": "NODE_ENV=test nyc mocha --recursive",
     "lint": "eslint .",
     "lint-fix": "eslint --fix ."
   },

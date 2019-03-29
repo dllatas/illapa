@@ -1,22 +1,10 @@
 const { describe, it } = require('mocha');
 const { assert } = require('chai');
 
-// const main = require('../src');
 const analysis = require('../src/analysis');
-// const synthesis = require('../src/synthesis');
 const { course } = require('./schema');
 
-// const POSTGRES = 'pg';
-// const MYSQL = 'mysql';
-
 describe('Analysis test module', () => {
-  /*
-   * const expected = {
-    [POSTGRES]: {},
-    [MYSQL]: {},
-  };
-  */
-
   describe('Table analysis', () => {
     const table = true;
     const analyzed = analysis(course.filter(l => l._table._name === table));
@@ -89,7 +77,6 @@ describe('Analysis test module', () => {
     it('Analysis should flag issues for no type, name\'s type, no number for size, mandatory name', () => {
       assert.isArray(analyzed.errorList);
       assert.lengthOf(analyzed.errorList, 5);
-      console.log(analyzed);
     });
 
     it('Check that column does not have a type', () => {
