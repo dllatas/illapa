@@ -1,6 +1,6 @@
 {
   "name": "illapa",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Utility that transforms config files describing a relational DB schema into the actual SQL DDL code ",
   "main": "index.js",
   "scripts": {
