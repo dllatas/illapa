@@ -38,37 +38,41 @@ describe('Main test module', () => {
   describe('Generate code for library', () => {
     it('Should generate code for the whole schema in Postgres', () => {
       const actual = main(library, POSTGRES, '_foreign._table', '_table._name');
-      assert.isArray(actual);
-      assert.lengthOf(actual, 7);
-      assert.strictEqual(actual[0], expected[POSTGRES].book);
-      assert.strictEqual(actual[1], expected[POSTGRES].chapter);
-      assert.strictEqual(actual[2], expected[POSTGRES].paragraph.table);
-      assert.strictEqual(actual[3], expected[POSTGRES].author.table);
-      assert.strictEqual(actual[4], expected[POSTGRES].book_author);
-      assert.strictEqual(actual[5], expected[POSTGRES].paragraph.index);
-      assert.strictEqual(actual[6], expected[POSTGRES].author.fk);
+      assert.isFalse(actual.error);
+      assert.isArray(actual.code);
+      assert.lengthOf(actual.code, 7);
+      assert.strictEqual(actual.code[0], expected[POSTGRES].book);
+      assert.strictEqual(actual.code[1], expected[POSTGRES].chapter);
+      assert.strictEqual(actual.code[2], expected[POSTGRES].paragraph.table);
+      assert.strictEqual(actual.code[3], expected[POSTGRES].author.table);
+      assert.strictEqual(actual.code[4], expected[POSTGRES].book_author);
+      assert.strictEqual(actual.code[5], expected[POSTGRES].paragraph.index);
+      assert.strictEqual(actual.code[6], expected[POSTGRES].author.fk);
     });
     it('Should generate code for the whole schema in MySQL', () => {
       const actual = main(library, MYSQL, '_foreign._table', '_table._name');
-      assert.isArray(actual);
-      assert.lengthOf(actual, 6);
-      assert.strictEqual(actual[0], expected[MYSQL].book);
-      assert.strictEqual(actual[1], expected[MYSQL].chapter);
-      assert.strictEqual(actual[2], expected[MYSQL].paragraph);
-      assert.strictEqual(actual[3], expected[MYSQL].author.table);
-      assert.strictEqual(actual[4], expected[MYSQL].book_author);
-      assert.strictEqual(actual[5], expected[MYSQL].author.fk);
+      assert.isFalse(actual.error);
+      assert.isArray(actual.code);
+      assert.lengthOf(actual.code, 6);
+      assert.strictEqual(actual.code[0], expected[MYSQL].book);
+      assert.strictEqual(actual.code[1], expected[MYSQL].chapter);
+      assert.strictEqual(actual.code[2], expected[MYSQL].paragraph);
+      assert.strictEqual(actual.code[3], expected[MYSQL].author.table);
+      assert.strictEqual(actual.code[4], expected[MYSQL].book_author);
+      assert.strictEqual(actual.code[5], expected[MYSQL].author.fk);
     });
   });
 
   describe('Generate code for Course', () => {
     it('Should generate code for the whole schema in Postgres', () => {
       const actual = main(course, POSTGRES, '_foreign._table', '_table._name');
-      assert.strictEqual(actual, '');
+      assert.isTrue(actual.error);
+      assert.isNull(actual.code);
     });
     it('Should generate code for the whole schema in MySQL', () => {
       const actual = main(course, MYSQL, '_foreign._table', '_table._name');
-      assert.strictEqual(actual, '');
+      assert.isTrue(actual.error);
+      assert.isNull(actual.code);
     });
   });
 });

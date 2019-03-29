@@ -12,7 +12,7 @@ const main = (schema, flavor, master, name) => {
   if (analyzed.errorList.length > 0) {
     logger.error('The schema needs some attention!');
     analyzed.errorList.map(e => logger.error(JSON.stringify(e)));
-    return '';
+    return { error: true, code: null };
   }
   logger.info('Schema analysis finished succesfully.');
 
@@ -26,7 +26,7 @@ const main = (schema, flavor, master, name) => {
   const ddlCode = synthesis(sortedSchema, flavor);
   logger.info('Schema synthesis finished succesfully.');
 
-  return ddlCode;
+  return { error: false, code: ddlCode };
 };
 
 module.exports = main;
